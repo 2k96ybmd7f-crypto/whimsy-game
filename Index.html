@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whimsy ✦ — Adivina con amigos</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --p:#7C6FF7;--pl:#EEEDFE;--pd:#5448D0;--p2:#A89AF8;
+  --bg:#F5F4FC;--white:#FFFFFF;--border:#E4E2F2;
+  --text:#1A1830;--muted:#8886A4;--light:#C8C6DC;
+  --green:#22C55E;--amber:#F59E0B;--red:#EF4444;--blue:#3B82F6;
+  --r:12px;--rL:20px;--rXL:24px;
+}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;font-size:15px}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;width:100%}
+.screen.active{display:flex}
+
+/* ════════════════════ LOBBY ════════════════════ */
+#s-lobby{flex-direction:column;align-items:center;justify-content:center;padding:2rem;background:radial-gradient(ellipse at 30% 20%,#EEF0FF 0%,var(--bg) 60%)}
+.lobby-wrap{width:100%;max-width:860px;display:flex;gap:2rem;align-items:flex-start}
+.lobby-left{flex:1;min-width:0}
+.lobby-right{width:320px;flex-shrink:0}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:2.8rem;font-weight:700;color:var(--p);letter-spacing:-1.5px;margin-bottom:.3rem}
+.logo sup{font-size:.9rem;opacity:.4;vertical-align:super}
+.logo-tagline{color:var(--muted);font-size:1rem;margin-bottom:1.5rem}
+.lang-row{display:flex;gap:6px;margin-bottom:1.5rem}
+.lang-btn{padding:6px 14px;border:1.5px solid var(--border);border-radius:20px;background:var(--white);font-size:.82rem;font-weight:500;cursor:pointer;color:var(--muted);transition:all .15s;font-family:'Outfit',sans-serif}
+.lang-btn.on{border-color:var(--p);color:var(--p);background:var(--pl)}
+.lobby-tabs{display:flex;gap:4px;background:var(--border);border-radius:var(--r);padding:3px;margin-bottom:1.2rem}
+.tab-btn{flex:1;padding:8px;border:none;border-radius:9px;background:transparent;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s}
+.tab-btn.on{background:var(--white);color:var(--p);box-shadow:0 1px 6px rgba(124,111,247,.12)}
+.card{background:var(--white);border-radius:var(--rXL);border:1px solid var(--border);padding:1.5rem}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:1rem}
+.field label{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.field input,.field select{padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:.95rem;color:var(--text);background:var(--white);outline:none;transition:border .18s}
+.field input:focus,.field select:focus{border-color:var(--p)}
+.cats-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:1rem}
+.cat-pill{display:flex;align-items:center;gap:7px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r);font-size:.82rem;font-weight:500;cursor:pointer;transition:all .15s;color:var(--muted);background:var(--white);font-family:'Outfit',sans-serif}
+.cat-pill.on{border-color:var(--p);background:var(--pl);color:var(--p)}
+.cat-pill .ci{font-size:1rem;line-height:1}
+.btn-primary{width:100%;padding:13px;background:var(--p);color:white;border:none;border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:.3rem;letter-spacing:.01em}
+.btn-primary:hover{background:var(--pd);transform:translateY(-1px);box-shadow:0 4px 16px rgba(124,111,247,.3)}
+.btn-primary:active{transform:translateY(0)}
+.btn-secondary{width:100%;padding:13px;background:var(--bg);color:var(--text);border:1.5px solid var(--border);border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s;margin-top:.5rem}
+.btn-secondary:hover{border-color:var(--p);color:var(--p)}
+.preview-box{background:var(--white);border-radius:var(--rXL);border:1px solid var(--border);padding:1.5rem;height:100%}
+.preview-title{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem}
+.preview-cats{display:flex;flex-direction:column;gap:8px}
+.preview-cat{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);cursor:pointer;transition:background .15s}
+.preview-cat:hover{background:var(--bg)}
+.preview-cat-icon{font-size:1.4rem;width:36px;height:36px;background:var(--bg);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.preview-cat-name{font-weight:600;font-size:.9rem}
+.preview-cat-count{font-size:.75rem;color:var(--muted)}
+.preview-cat-active{margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--light)}
+.preview-cat-active.on{background:var(--green)}
+.score-options{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:1rem}
+.score-opt{padding:10px;border:1.5px solid var(--border);border-radius:var(--r);text-align:center;cursor:pointer;transition:all .15s;font-size:.85rem;font-weight:600;color:var(--muted)}
+.score-opt.on{border-color:var(--p);background:var(--pl);color:var(--p)}
+.score-opt .score-num{display:block;font-size:1.2rem;font-weight:800;color:var(--text);margin-bottom:2px}
+.score-opt.on .score-num{color:var(--p)}
+
+/* ════════════════════ GAME SCREEN ════════════════════ */
+#s-game{flex-direction:column;background:var(--bg)}
+.topbar{height:52px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.2rem;gap:.8rem;flex-shrink:0;position:sticky;top:0;z-index:10}
+.tb-logo{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:700;color:var(--p)}
+.tb-code{background:var(--pl);color:var(--p);font-family:'Space Grotesk',monospace;font-size:.85rem;font-weight:700;letter-spacing:3px;padding:4px 10px;border-radius:7px;cursor:pointer;transition:all .15s;user-select:all}
+.tb-code:hover{background:var(--p);color:#fff}
+.tb-sep{flex:1}
+.tb-info{display:flex;align-items:center;gap:5px;font-size:.78rem;color:var(--muted);font-weight:500}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.tb-exit{padding:5px 12px;border:1.5px solid var(--border);border-radius:20px;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer;background:transparent;transition:all .15s}
+.tb-exit:hover{border-color:var(--red);color:var(--red)}
+
+.game-layout{display:grid;grid-template-columns:230px 1fr 252px;gap:1rem;padding:1rem;flex:1;max-width:1280px;margin:0 auto;width:100%}
+
+/* PANEL */
+.panel{background:var(--white);border-radius:var(--rL);border:1px solid var(--border);padding:1.2rem;display:flex;flex-direction:column;gap:1rem;min-height:0}
+.pnl-title{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+
+/* LEFT PANEL */
+.room-stat{display:flex;justify-content:space-between;align-items:center}
+.room-stat-label{font-size:.82rem;color:var(--muted)}
+.room-stat-val{font-size:.88rem;font-weight:700;color:var(--text)}
+.players-list{display:flex;flex-direction:column;gap:5px}
+.player-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:9px;transition:background .12s}
+.player-row:hover{background:var(--bg)}
+.av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;flex-shrink:0}
+.pname{font-size:.85rem;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pbadge{font-size:.65rem;color:var(--amber)}
+.pdot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+
+.attempts-area{flex:1;overflow:hidden;display:flex;flex-direction:column;gap:7px;min-height:120px}
+.alist{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.alist::-webkit-scrollbar{width:3px}
+.alist::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.attempt{display:flex;gap:5px;padding:5px 8px;border-radius:8px;background:var(--bg);font-size:.8rem;animation:slideIn .2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.aname{font-weight:700;color:var(--p);white-space:nowrap;flex-shrink:0}
+.aguess{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.no-att{font-size:.78rem;color:var(--light);text-align:center;padding:1.5rem 0;line-height:1.6}
+
+.invite-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border:1.5px dashed var(--border);background:transparent;border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;margin-top:auto}
+.invite-btn:hover{border-color:var(--p);color:var(--p)}
+
+/* CENTER */
+.center-col{display:flex;flex-direction:column;align-items:center;gap:.8rem;min-height:0}
+.cat-row{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:520px}
+.cat-badge{display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--border);border-radius:30px;padding:5px 14px 5px 7px}
+.cat-badge-icon{width:28px;height:28px;border-radius:50%;background:var(--pl);display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.cat-badge-label{font-size:.8rem;font-weight:700;color:var(--p)}
+.timer-cluster{display:flex;align-items:center;gap:10px}
+.timer-wrap{position:relative;width:80px;height:80px;flex-shrink:0}
+.timer-wrap svg{position:absolute;top:0;left:0;transform:rotate(-90deg)}
+.tcircle{transition:stroke-dashoffset .95s linear;stroke-linecap:round}
+.timer-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.tsec{font-size:1.7rem;font-weight:800;line-height:1;color:var(--text);font-family:'Space Grotesk',sans-serif}
+.tlbl{font-size:.52rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:-1px}
+.round-badge{text-align:right}
+.round-lbl{font-size:.72rem;color:var(--muted)}
+.round-num{font-size:1.1rem;font-weight:800;font-family:'Space Grotesk',sans-serif;color:var(--text)}
+
+.img-frame{width:100%;max-width:520px;aspect-ratio:1/1;background:#0E0D1A;border-radius:var(--rL);overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.06);flex-shrink:0}
+.img-frame img{width:100%;height:100%;object-fit:contain;padding:1.2rem;transition:opacity .3s;display:block}
+.q-pill{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600;white-space:nowrap;z-index:5;border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(4px)}
+.reveal-ov{position:absolute;inset:0;background:rgba(10,9,26,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;opacity:0;transition:opacity .28s;pointer-events:none}
+.reveal-ov.show{opacity:1;pointer-events:all}
+.reveal-lbl{font-size:.65rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.18em;margin-bottom:5px}
+.reveal-ans{font-size:2rem;font-weight:800;color:#fff;text-align:center;line-height:1.1;font-family:'Space Grotesk',sans-serif}
+.reveal-who{font-size:.85rem;color:rgba(255,255,255,.55);margin-top:6px}
+.correct-ring{position:absolute;inset:0;border:3px solid var(--green);border-radius:var(--rL);pointer-events:none;z-index:9;opacity:0;transition:opacity .18s}
+.correct-ring.show{opacity:1}
+.img-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px}
+.img-placeholder .pi{font-size:3.5rem;opacity:.2}
+.img-placeholder p{color:rgba(255,255,255,.3);font-size:.9rem}
+
+.input-row{display:flex;gap:7px;width:100%;max-width:520px}
+.guess-inp{flex:1;padding:12px 16px;border:2px solid var(--border);border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:1rem;color:var(--text);background:var(--white);outline:none;transition:border .18s}
+.guess-inp:focus{border-color:var(--p)}
+.guess-inp:disabled{opacity:.45;cursor:not-allowed}
+.send-btn{width:46px;height:46px;background:var(--p);border:none;border-radius:var(--r);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0}
+.send-btn:hover{background:var(--pd);transform:scale(1.06)}
+.send-btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.inp-hint{font-size:.72rem;color:var(--light);display:flex;align-items:center;gap:4px}
+
+.phase-msg{font-size:.9rem;color:var(--muted);text-align:center;padding:.5rem;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.start-btn{padding:12px 32px;background:var(--p);color:#fff;border:none;border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;animation:fadeIn .3s ease}
+.start-btn:hover{background:var(--pd);transform:translateY(-1px);box-shadow:0 4px 20px rgba(124,111,247,.35)}
+
+/* RIGHT PANEL */
+.lb-row{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:10px;transition:all .25s}
+.lb-row.you{background:var(--pl)}
+.lb-medal{font-size:1rem;width:20px;text-align:center;flex-shrink:0}
+.lb-rank-num{font-size:.75rem;color:var(--light);font-weight:700;width:20px;text-align:center}
+.lb-info{flex:1;overflow:hidden}
+.lb-name{font-size:.85rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-you-tag{font-size:.6rem;color:var(--p);font-weight:700}
+.lb-prog{height:3px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden}
+.lb-prog-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.lb-score{font-size:.88rem;font-weight:800;font-family:'Space Grotesk',sans-serif;min-width:30px;text-align:right;color:var(--text)}
+
+.act-feed{display:flex;flex-direction:column;gap:5px;max-height:150px;overflow-y:auto}
+.act-item{display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:8px;background:var(--bg);font-size:.78rem;animation:slideIn .2s ease}
+.act-av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;flex-shrink:0}
+.act-text{flex:1;color:var(--muted)}
+.act-pts{font-weight:800;color:var(--green);font-size:.78rem;white-space:nowrap}
+
+.lb-footer{text-align:center;font-size:.68rem;color:var(--light);padding-top:.7rem;border-top:1px solid var(--border);margin-top:auto}
+
+/* ════════════════════ END SCREEN ════════════════════ */
+#s-end{flex-direction:column;align-items:center;justify-content:center;padding:2rem;background:radial-gradient(ellipse at 50% 0%,#EEF0FF,var(--bg))}
+.end-card{background:var(--white);border-radius:var(--rXL);padding:2.5rem;max-width:420px;width:100%;border:1px solid var(--border);text-align:center;box-shadow:0 12px 48px rgba(124,111,247,.12)}
+.end-trophy{font-size:4.5rem;margin-bottom:.5rem;animation:bounceIn .6s ease}
+@keyframes bounceIn{0%{transform:scale(.3)}60%{transform:scale(1.15)}80%{transform:scale(.95)}100%{transform:scale(1)}}
+.end-winner{font-size:1.9rem;font-weight:800;color:var(--text);letter-spacing:-1px;font-family:'Space Grotesk',sans-serif}
+.end-sub{color:var(--muted);margin-bottom:1.5rem;font-size:.9rem}
+.fs-list{text-align:left;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:0}
+.fs-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.fs-row:last-child{border-bottom:none}
+.fs-medal{font-size:1.2rem;width:26px}
+.fs-name{flex:1;font-weight:500;font-size:.9rem}
+.fs-score{font-weight:800;font-size:1rem;font-family:'Space Grotesk',sans-serif;color:var(--p)}
+.end-btns{display:flex;gap:8px}
+.end-btn-p{flex:1;padding:12px;background:var(--p);color:#fff;border:none;border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s}
+.end-btn-p:hover{background:var(--pd)}
+.end-btn-s{flex:1;padding:12px;background:var(--bg);color:var(--text);border:1.5px solid var(--border);border-radius:var(--r);font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s}
+.end-btn-s:hover{border-color:var(--p);color:var(--p)}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:999;pointer-events:none}
+.toast{background:var(--text);color:#fff;padding:9px 20px;border-radius:30px;font-size:.85rem;font-weight:500;opacity:0;transform:translateY(8px);transition:all .25s;white-space:nowrap}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:#14532D}
+
+/* ── POINTS POP ── */
+.pts-pop{position:fixed;font-size:2.2rem;font-weight:800;color:var(--green);z-index:998;pointer-events:none;font-family:'Space Grotesk',sans-serif;animation:popUp 1.1s forwards;text-shadow:0 2px 12px rgba(34,197,94,.4)}
+@keyframes popUp{0%{opacity:0;transform:translateY(0) scale(.6)}20%{opacity:1;transform:translateY(-22px) scale(1.15)}75%{opacity:1;transform:translateY(-55px) scale(1)}100%{opacity:0;transform:translateY(-75px) scale(.9)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .game-layout{grid-template-columns:1fr;padding:.7rem}
+  .panel.left-panel,.panel.right-panel{display:none}
+}
+@media(max-width:600px){
+  .lobby-wrap{flex-direction:column}.lobby-right{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="toast-wrap"><div class="toast" id="toast"></div></div>
+
+<!-- ════════ LOBBY ════════ -->
+<div class="screen active" id="s-lobby">
+<div class="lobby-wrap">
+  <div class="lobby-left">
+    <div class="logo">Whimsy<sup>✦</sup></div>
+    <div class="logo-tagline" id="t-tagline">Adivina imágenes con amigos</div>
+    <div class="lang-row">
+      <button class="lang-btn on" onclick="setLang('es')" id="lb-es">🇲🇽 Español</button>
+      <button class="lang-btn" onclick="setLang('en')" id="lb-en">🇺🇸 English</button>
+    </div>
+    <div class="card">
+      <div class="lobby-tabs">
+        <button class="tab-btn on" onclick="showTab('create')" id="tb-create" data-t='{"es":"Crear sala","en":"Create Room"}'>Crear sala</button>
+        <button class="tab-btn" onclick="showTab('join')" id="tb-join" data-t='{"es":"Unirse","en":"Join"}'>Unirse</button>
+      </div>
+      <!-- CREATE -->
+      <div id="tab-create">
+        <div class="field">
+          <label id="t-yourname">Tu nombre</label>
+          <input type="text" id="i-hname" maxlength="16" placeholder="Ej: Elías">
+        </div>
+        <div class="field">
+          <label id="t-goal">Meta de puntos</label>
+        </div>
+        <div class="score-options" id="score-opts">
+          <div class="score-opt on" data-v="100" onclick="pickScore(this)"><span class="score-num">100</span>Rápida</div>
+          <div class="score-opt" data-v="250" onclick="pickScore(this)"><span class="score-num">250</span>Normal</div>
+          <div class="score-opt" data-v="500" onclick="pickScore(this)"><span class="score-num">500</span>Larga</div>
+          <div class="score-opt" data-v="1000" onclick="pickScore(this)"><span class="score-num">1000</span>Épica</div>
+        </div>
+        <div class="field">
+          <label id="t-cats">Categorías</label>
+        </div>
+        <div class="cats-grid" id="cats-grid"></div>
+        <button class="btn-primary" onclick="doCreate()" id="t-create-btn">Crear Sala</button>
+      </div>
+      <!-- JOIN -->
+      <div id="tab-join" style="display:none">
+        <div class="field">
+          <label id="t-yourname2">Tu nombre</label>
+          <input type="text" id="i-jname" maxlength="16" placeholder="Ej: Ana">
+        </div>
+        <div class="field">
+          <label id="t-roomcode">Código de sala</label>
+          <input type="text" id="i-jcode" maxlength="6" placeholder="X7KP92" style="text-transform:uppercase;letter-spacing:4px;font-family:'Space Grotesk',monospace;font-size:1.2rem;text-align:center" oninput="this.value=this.value.toUpperCase()">
+        </div>
+        <button class="btn-primary" onclick="doJoin()" id="t-join-btn">Unirse a la Sala</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PREVIEW -->
+  <div class="lobby-right">
+    <div class="preview-box">
+      <div class="preview-title" id="t-preview">Categorías disponibles</div>
+      <div class="preview-cats" id="preview-cats"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════ GAME ════════ -->
+<div class="screen" id="s-game">
+  <div class="topbar">
+    <div class="tb-logo">Whimsy<sup style="font-size:.55rem;opacity:.4">✦</sup></div>
+    <div class="tb-code" id="tb-code" onclick="copyCode()" title="Clic para copiar">X7KP92</div>
+    <div class="tb-sep"></div>
+    <div class="tb-info">🎯 <span id="tb-target">250</span></div>
+    <div class="tb-info">👥 <span id="tb-pcount">8</span></div>
+    <div class="tb-info"><span class="live-dot"></span> Live</div>
+    <button class="tb-exit" onclick="goHome()" id="t-exit">Salir</button>
+  </div>
+
+  <div class="game-layout">
+    <!-- LEFT -->
+    <div class="panel left-panel">
+      <div class="pnl-title" id="t-room">Sala</div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div class="room-stat"><span class="room-stat-label" id="t-rl-mode">Modo</span><span class="room-stat-val" id="t-rl-modeval">Clásico</span></div>
+        <div class="room-stat"><span class="room-stat-label" id="t-rl-players">Jugadores</span><span class="room-stat-val" id="rl-pcount">8</span></div>
+        <div class="room-stat"><span class="room-stat-label" id="t-rl-target">Meta</span><span class="room-stat-val" id="rl-target">250 pts</span></div>
+        <div class="room-stat"><span class="room-stat-label" id="t-rl-cats">Categorías</span><span class="room-stat-val" id="rl-cats">3</span></div>
+      </div>
+      <div>
+        <div class="pnl-title" id="t-connected" style="margin-bottom:8px">Jugadores conectados</div>
+        <div class="players-list" id="players-list"></div>
+      </div>
+      <div class="attempts-area">
+        <div class="pnl-title" id="t-attempts">Intentos recientes</div>
+        <div class="alist" id="alist">
+          <div class="no-att" id="no-att-msg">Los intentos incorrectos<br>aparecerán aquí.<br>¡Son una pista!</div>
+        </div>
+      </div>
+      <button class="invite-btn" onclick="copyCode()">👥 <span id="t-invite">Invitar amigos</span></button>
+    </div>
+
+    <!-- CENTER -->
+    <div class="center-col">
+      <div class="cat-row">
+        <div class="cat-badge" id="cat-badge">
+          <div class="cat-badge-icon" id="cat-icon">⚡</div>
+          <div>
+            <div style="font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em" id="t-cat">Categoría</div>
+            <div class="cat-badge-label" id="cat-name">Pokémon</div>
+          </div>
+        </div>
+        <div class="timer-cluster">
+          <div class="timer-wrap">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="33" fill="none" stroke="var(--border)" stroke-width="6"/>
+              <circle id="tcircle" class="tcircle" cx="40" cy="40" r="33" fill="none" stroke="var(--p)" stroke-width="6" stroke-dasharray="207.35" stroke-dashoffset="0"/>
+            </svg>
+            <div class="timer-inner">
+              <div class="tsec" id="tsec">20</div>
+              <div class="tlbl" id="t-sec">SEG</div>
+            </div>
+          </div>
+          <div class="round-badge">
+            <div class="round-lbl" id="t-round">Imagen</div>
+            <div class="round-num" id="round-num">1</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="img-frame" id="img-frame">
+        <div class="q-pill" id="q-pill">¿Qué es esto?</div>
+        <img id="game-img" src="" alt="imagen" style="opacity:0" onerror="imgError(this)">
+        <div class="img-placeholder" id="img-ph">
+          <div class="pi">🖼️</div>
+          <p id="t-waiting">Esperando...</p>
+        </div>
+        <div class="reveal-ov" id="reveal-ov">
+          <div class="reveal-lbl" id="t-answer-was">LA RESPUESTA ERA</div>
+          <div class="reveal-ans" id="reveal-ans"></div>
+          <div class="reveal-who" id="reveal-who"></div>
+        </div>
+        <div class="correct-ring" id="correct-ring"></div>
+      </div>
+
+      <div class="input-row">
+        <input class="guess-inp" type="text" id="guess-inp" placeholder="¿Qué es esto?" autocomplete="off" onkeydown="onGuessKey(event)">
+        <button class="send-btn" onclick="submitGuess()" id="send-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <div class="inp-hint">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="t-hint">Escribe la respuesta. Intentos ilimitados.</span>
+      </div>
+      <div id="phase-msg" class="phase-msg" style="display:none"></div>
+      <button class="start-btn" id="start-btn" onclick="hostStart()" style="display:none">🎮 <span id="t-start">Iniciar juego</span></button>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="panel right-panel">
+      <div style="display:flex;align-items:center;gap:6px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <div class="pnl-title" id="t-lb">Tabla de posiciones</div>
+      </div>
+      <div id="leaderboard" style="display:flex;flex-direction:column;gap:6px"></div>
+      <div style="margin-top:auto">
+        <div class="pnl-title" style="margin-bottom:7px" id="t-activity">Actividad reciente</div>
+        <div class="act-feed" id="act-feed"></div>
+      </div>
+      <div class="lb-footer"><span id="t-firstto">Primero en llegar a</span> <strong id="lb-target">250</strong> <span id="t-wins">gana</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ END ════════ -->
+<div class="screen" id="s-end">
+  <div class="end-card">
+    <div class="end-trophy">🏆</div>
+    <div class="end-winner" id="end-winner">Elías ganó!</div>
+    <div class="end-sub" id="end-sub">Partida terminada</div>
+    <div class="fs-list" id="fs-list"></div>
+    <div class="end-btns">
+      <button class="end-btn-p" onclick="goHome()" id="t-playagain">Jugar de nuevo</button>
+      <button class="end-btn-s" onclick="goHome()" id="t-home">Inicio</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  TRANSLATIONS
+// ══════════════════════════════════════════════════════
+const TR = {
+  es:{
+    't-tagline':'Adivina imágenes con amigos',
+    't-yourname':'Tu nombre','t-yourname2':'Tu nombre',
+    't-goal':'Meta de puntos','t-cats':'Categorías',
+    't-create-btn':'Crear Sala','t-join-btn':'Unirse a la Sala',
+    't-roomcode':'Código de sala','t-preview':'Categorías disponibles',
+    't-room':'Sala','t-rl-mode':'Modo','t-rl-modeval':'Clásico',
+    't-rl-players':'Jugadores','t-rl-target':'Meta','t-rl-cats':'Categorías',
+    't-connected':'Jugadores conectados','t-attempts':'Intentos recientes',
+    't-invite':'Invitar amigos','t-cat':'Categoría','t-sec':'SEG','t-round':'Imagen',
+    't-hint':'Escribe la respuesta. Intentos ilimitados.',
+    't-waiting':'Esperando que inicie el juego...',
+    't-answer-was':'LA RESPUESTA ERA',
+    'no-att-msg':'Los intentos incorrectos\naparecerán aquí.\n¡Son una pista!',
+    't-exit':'Salir','t-lb':'Tabla de posiciones','t-activity':'Actividad reciente',
+    't-firstto':'Primero en llegar a','t-wins':'gana',
+    't-end-sub':'Partida terminada','t-playagain':'Jugar de nuevo','t-home':'Inicio',
+    't-start':'Iniciar juego',
+    'phase-waiting':'Esperando al anfitrión...',
+    'phase-reveal':'Siguiente imagen en un momento...',
+    'guess-ph':'¿Qué es esto?',
+    'tb-create':'Crear sala','tb-join':'Unirse',
+    'toast-copied':'¡Código copiado!',
+    'toast-correct':'¡Correcto! +',
+    'score-100':'Rápida','score-250':'Normal','score-500':'Larga','score-1000':'Épica',
+  },
+  en:{
+    't-tagline':'Guess images with friends',
+    't-yourname':'Your name','t-yourname2':'Your name',
+    't-goal':'Score goal','t-cats':'Categories',
+    't-create-btn':'Create Room','t-join-btn':'Join Room',
+    't-roomcode':'Room code','t-preview':'Available categories',
+    't-room':'Room','t-rl-mode':'Mode','t-rl-modeval':'Classic',
+    't-rl-players':'Players','t-rl-target':'Goal','t-rl-cats':'Categories',
+    't-connected':'Connected players','t-attempts':'Recent attempts',
+    't-invite':'Invite friends','t-cat':'Category','t-sec':'SEC','t-round':'Image',
+    't-hint':'Type the answer. Unlimited attempts.',
+    't-waiting':'Waiting for the game to start...',
+    't-answer-was':'THE ANSWER WAS',
+    'no-att-msg':'Wrong guesses\nwill appear here.\nThey\'re a clue!',
+    't-exit':'Exit','t-lb':'Leaderboard','t-activity':'Recent activity',
+    't-firstto':'First to','t-wins':'wins',
+    't-end-sub':'Game over','t-playagain':'Play again','t-home':'Home',
+    't-start':'Start game',
+    'phase-waiting':'Waiting for host...',
+    'phase-reveal':'Next image in a moment...',
+    'guess-ph':'What is this?',
+    'tb-create':'Create room','tb-join':'Join',
+    'toast-copied':'Code copied!',
+    'toast-correct':'Correct! +',
+    'score-100':'Quick','score-250':'Normal','score-500':'Long','score-1000':'Epic',
+  }
+};
+let LANG = 'es';
+
+function t(k){ return (TR[LANG][k]||TR['es'][k]||k) }
+
+function applyLang(){
+  document.querySelectorAll('[id^="t-"],[id="no-att-msg"]').forEach(el=>{
+    const k = el.id;
+    const v = TR[LANG][k];
+    if(!v) return;
+    if(el.tagName==='INPUT') el.placeholder=v;
+    else if(el.tagName==='BUTTON') el.textContent=v;
+    else el.innerHTML=v.replace(/\n/g,'<br>');
+  });
+  document.getElementById('guess-inp').placeholder = t('guess-ph');
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    try{ const o=JSON.parse(el.dataset.t); el.textContent=o[LANG]||o.es; }catch(e){}
+  });
+  document.querySelectorAll('.score-opt').forEach(el=>{
+    const v=el.dataset.v;
+    el.querySelector('.score-num').textContent=v;
+    el.lastChild.textContent=t('score-'+v);
+  });
+  buildCatsGrid();
+  buildPreview();
+}
+
+function setLang(l){
+  LANG=l;
+  document.getElementById('lb-es').classList.toggle('on',l==='es');
+  document.getElementById('lb-en').classList.toggle('on',l==='en');
+  applyLang();
+}
+
+// ══════════════════════════════════════════════════════
+//  CATEGORIES & QUESTIONS DATABASE
+// ══════════════════════════════════════════════════════
+const CATS = [
+  {id:'destiny2', icon:'🔫', es:'Destiny 2', en:'Destiny 2'},
+  {id:'csgo',     icon:'💣', es:'CS:GO / CS2', en:'CS:GO / CS2'},
+  {id:'dragonball',icon:'🔮',es:'Dragon Ball', en:'Dragon Ball'},
+  {id:'series',   icon:'🎬', es:'Series y Películas', en:'Series & Movies'},
+  {id:'pokemon',  icon:'⚡', es:'Pokémon', en:'Pokémon'},
+  {id:'anime',    icon:'🌸', es:'Anime', en:'Anime'},
+];
+
+const WRONG_POOL = {
+  destiny2:['Titan','Warlock','Hunter','Cayde-6','Zavala','Ikora','Drifter','Rasputin','Xur','Lord Shaxx','Saladin','Ana Bray','Mithrax','Crow'],
+  csgo:['AK-47','AWP','Desert Eagle','Dust II','Mirage','Inferno','Nuke','Overpass','Train','M4A4','USP-S','Glock-18','P250','MP9'],
+  dragonball:['Goku','Vegeta','Gohan','Piccolo','Trunks','Cell','Freezer','Buu','Broly','Raditz','Krillin','Tenshinhan','Yamcha','Androide 18'],
+  series:['Breaking Bad','Game of Thrones','Stranger Things','The Office','Friends','The Witcher','Squid Game','Wednesday','Dark','Money Heist'],
+  pokemon:['Pikachu','Charizard','Mewtwo','Bulbasaur','Squirtle','Jigglypuff','Gengar','Snorlax','Eevee','Lucario','Greninja'],
+  anime:['Naruto','Sasuke','Goku','Luffy','Ichigo','Light Yagami','Eren','Levi','Mikasa','Nezuko','Tanjiro','Zoro'],
+};
+
+// Answers accept multiple variants
+function makeQ(answer, img, q, qen, variants=[], cat=''){
+  return {answer, img, q, qen: qen||q, variants: variants.map(v=>v.toLowerCase()), cat};
+}
+
+// =============================================
+// Multi API image loader (Original → Picsum → Unsplash → Nice SVG)
+function getImageSources(q) {
+  const sources = [];
+  const seed = (q.answer || 'game').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 30);
+  const kw = encodeURIComponent((q.answer || '') + ' ' + (q.cat || ''));
+
+  if (q.img) sources.push(q.img);
+  sources.push(`https://picsum.photos/seed/${seed}/520/520`);
+  sources.push(`https://source.unsplash.com/520x520/?${kw}`);
+  return sources;
+}
+
+let _imgSrcs = [], _imgIdx = 0;
+
+function loadGameImage(imgEl, phEl, q) {
+  _imgSrcs = getImageSources(q);
+  _imgIdx = 0;
+  phEl.style.display = 'none';
+  imgEl.style.display = 'block';
+  imgEl.style.opacity = '0';
+
+  const tryNext = () => {
+    if (_imgIdx >= _imgSrcs.length) {
+      showFallback(imgEl, phEl, q);
+      return;
+    }
+    imgEl.src = _imgSrcs[_imgIdx++];
+  };
+
+  imgEl.onload = () => imgEl.style.opacity = '1';
+  imgEl.onerror = tryNext;
+  tryNext();
+}
+
+function showFallback(imgEl, phEl, q) {
+  imgEl.style.display = 'none';
+  phEl.style.display = 'flex';
+  phEl.innerHTML = `
+    <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0E0D1A;border-radius:20px;color:#fff">
+      <div style="font-size:4.5rem;margin-bottom:10px">${q.catInfo?.icon || '🎮'}</div>
+      <div style="font-size:1.25rem;font-weight:700">¿Qué es esto?</div>
+      <div style="margin-top:6px;opacity:.8;font-size:.95rem">${q.catInfo ? (LANG==='en'?q.catInfo.en:q.catInfo.es) : ''}</div>
+    </div>`;
+}
+
+const QUESTIONS = {
+destiny2: [
+  makeQ('Gjallarhorn','https://www.bungie.net/common/destiny2_content/icons/4fd20855b0144f7d5e7bcd1d7e3e5e3a.jpg','¿Cómo se llama esta arma?','What weapon is this?',['gjallarhorn','gjally'],'destiny2'),
+  makeQ('Void','https://i.imgur.com/5RxMv0p.png','¿Qué elemento es este?','What element is this?',['vacío','vacio','void'],'destiny2'),
+  makeQ('Exotic Engram','https://www.bungie.net/common/destiny2_content/icons/73d9d73dfc79d1f1fe1e2d8f22abfc89.jpg','¿Qué objeto es este?','What item is this?',['engrama exótico','exotic engram','engrama'],'destiny2'),
+  makeQ('The Traveler','https://i.imgur.com/KpY5XkP.png','¿Qué es esta esfera gigante?','What is this giant sphere?',['traveler','el viajero','viajero'],'destiny2'),
+  makeQ('Cayde-6','https://i.imgur.com/7ZKxY1c.png','¿Quién es este personaje?','Who is this character?',['cayde','cayde6','cayde 6'],'destiny2'),
+  makeQ('Zavala','https://i.imgur.com/N7zK2c5.png','¿Quién es el Vanguardia Titan?','Who is the Titan Vanguard?',['zavala','commander zavala'],'destiny2'),
+  makeQ('Uldren Sov','https://i.imgur.com/PqXZ8wS.png','¿Quién es este Prince de los Arrecifes?','Who is this Prince of the Reef?',['uldren','uldren sov','crow'],'destiny2'),
+  makeQ('Vault of Glass','https://i.imgur.com/3GYpK5n.png','¿Cómo se llama esta Redada?','What is this Raid called?',['vault of glass','boveda de cristal','boveda'],'destiny2'),
+  makeQ('Crota','https://i.imgur.com/LM5jZ2h.png','¿Cómo se llama este jefe de la Luna?','Who is this Moon boss?',['crota',"crota's end"],'destiny2'),
+  makeQ('Ghost','https://i.imgur.com/oRmJkHf.png','¿Qué es este compañero robot?','What is this robot companion?',['ghost','fantasma'],'destiny2'),
+  makeQ('Dawnblade','https://i.imgur.com/Xp2zGKP.png','¿Qué subclase Warlock es esta?','What Warlock subclass is this?',['dawn blade','dawnblade','filo del alba'],'destiny2'),
+  makeQ('Stasis','https://i.imgur.com/WoRKzJl.png','¿Qué elemento oscuro es este?','What dark element is this?',['stasis','estasis'],'destiny2'),
+  makeQ('The Last City','https://i.imgur.com/9TvFzXK.png','¿Cómo se llama esta ciudad?','What is this city called?',['last city','ultima ciudad','the last city'],'destiny2'),
+  makeQ('Ikora Rey','https://i.imgur.com/BPzKxY4.png','¿Quién es la Vanguardia Warlock?','Who is the Warlock Vanguard?',['ikora','ikora rey'],'destiny2'),
+  makeQ('Pyramid Ship','https://i.imgur.com/5z3ZhGb.png','¿Qué nave de la oscuridad es esta?','What dark ship is this?',['pyramid','nave piramide','pyramid ship','piramide'],'destiny2'),
+],
+csgo: [
+  makeQ('AWP','https://wiki.teamfortress.com/w/images/thumb/c/c0/Backpack_AWPer_Hand.png/300px-Backpack_AWPer_Hand.png','¿Qué arma es esta?','What weapon is this?',['awp','awpper','sniper'],'csgo'),
+  makeQ('AK-47','https://i.imgur.com/ZxKwY2p.png','¿Qué rifle es este?','What rifle is this?',['ak47','ak 47','ak'],'csgo'),
+  makeQ('Desert Eagle','https://i.imgur.com/YfKxM3n.png','¿Qué pistola es esta?','What pistol is this?',['deagle','desert eagle','desertieagle'],'csgo'),
+  makeQ('Dust II','https://i.imgur.com/tRpZ7qK.png','¿Cómo se llama este mapa?','What map is this?',['dust2','dust 2','de_dust2'],'csgo'),
+  makeQ('Mirage','https://i.imgur.com/NkpZ8wS.png','¿Cómo se llama este mapa?','What map is this?',['mirage','de_mirage'],'csgo'),
+  makeQ('Inferno','https://i.imgur.com/VrLM9zK.png','¿Cómo se llama este mapa?','What map is this?',['inferno','de_inferno'],'csgo'),
+  makeQ('Karambit','https://i.imgur.com/LpKzY5n.png','¿Qué cuchillo es este?','What knife is this?',['karambit','karamit'],'csgo'),
+  makeQ('M4A4','https://i.imgur.com/XwKpM4z.png','¿Qué rifle CT es este?','What CT rifle is this?',['m4a4','m4'],'csgo'),
+  makeQ('USP-S','https://i.imgur.com/BrKwZ3p.png','¿Qué pistola silenciada es esta?','What silenced pistol is this?',['usp','usp-s','usps'],'csgo'),
+  makeQ('Nuke','https://i.imgur.com/MpZrK7n.png','¿Cómo se llama este mapa industrial?','What industrial map is this?',['nuke','de_nuke'],'csgo'),
+  makeQ('Molotov','https://i.imgur.com/PkZwY8m.png','¿Qué granada incendiaria es esta?','What incendiary grenade is this?',['molotov','molotof'],'csgo'),
+  makeQ('HE Grenade','https://i.imgur.com/YkpZM5w.png','¿Qué tipo de granada es esta?','What type of grenade is this?',['he grenade','he','high explosive','granada he'],'csgo'),
+  makeQ('Overpass','https://i.imgur.com/RkwZP9n.png','¿Cómo se llama este mapa urbano?','What urban map is this?',['overpass','de_overpass'],'csgo'),
+  makeQ('Knife','https://i.imgur.com/TwKzY3p.png','¿Qué arma cuerpo a cuerpo es esta?','What melee weapon is this?',['knife','cuchillo','navaja'],'csgo'),
+  makeQ('Flash','https://i.imgur.com/ZkpZW7n.png','¿Qué granada cegadora es esta?','What blinding grenade is this?',['flash','flashbang','granada flash'],'csgo'),
+],
+dragonball: [
+  makeQ('Goku','https://static.wikia.nocookie.net/dragonball/images/5/5b/Goku_DB_Ep_153_001.png','¿Quién es este Saiyan?','Who is this Saiyan?',['goku','kakarot','kakaroto'],'dragonball'),
+  makeQ('Vegeta','https://static.wikia.nocookie.net/dragonball/images/e/ea/VegetaDBZ02.png','¿Quién es el Prince de los Saiyans?','Who is the Prince of Saiyans?',['vegeta','el prince','the prince'],'dragonball'),
+  makeQ('Gohan','https://static.wikia.nocookie.net/dragonball/images/0/0a/Gohan_adult.png','¿Cómo se llama el hijo de Goku?','What is Goku\'s son\'s name?',['gohan','son gohan'],'dragonball'),
+  makeQ('Piccolo','https://static.wikia.nocookie.net/dragonball/images/1/18/PiccoloDaemoDragonball.png','¿Quién es este Namekiano?','Who is this Namekian?',['piccolo'],'dragonball'),
+  makeQ('Freezer','https://static.wikia.nocookie.net/dragonball/images/6/6f/FriezaFinalForm.png','¿Quién es este villano galáctico?','Who is this galactic villain?',['freezer','frieza','friéza','freeza'],'dragonball'),
+  makeQ('Cell','https://static.wikia.nocookie.net/dragonball/images/0/0a/PerfectCellNV.png','¿Quién es este ser perfecto?','Who is this perfect being?',['cell','perfect cell','célula'],'dragonball'),
+  makeQ('Majin Buu','https://static.wikia.nocookie.net/dragonball/images/a/af/MajinBuu.png','¿Quién es este ser de goma?','Who is this rubber being?',['majin buu','buu','boo','majin boo'],'dragonball'),
+  makeQ('Trunks','https://static.wikia.nocookie.net/dragonball/images/a/a2/Trunks.png','¿Cómo se llama el hijo de Vegeta?','What is Vegeta\'s son\'s name?',['trunks'],'dragonball'),
+  makeQ('Krillin','https://static.wikia.nocookie.net/dragonball/images/a/a1/KrillinNV.png','¿Quién es el mejor amigo humano de Goku?','Who is Goku\'s best human friend?',['krillin','krilin','kuririn'],'dragonball'),
+  makeQ('Broly','https://static.wikia.nocookie.net/dragonball/images/b/bc/BrolyDBS.png','¿Quién es el Saiyan Legendario?','Who is the Legendary Super Saiyan?',['broly','brolly'],'dragonball'),
+  makeQ('Goten','https://static.wikia.nocookie.net/dragonball/images/8/8a/GotenDBS.png','¿Cómo se llama el segundo hijo de Goku?','What is Goku\'s second son called?',['goten'],'dragonball'),
+  makeQ('Android 18','https://static.wikia.nocookie.net/dragonball/images/8/83/Android18DB.png','¿Quién es esta Androide?','Who is this Android?',['android 18','androide 18','18','número 18'],'dragonball'),
+  makeQ('Bardock','https://static.wikia.nocookie.net/dragonball/images/b/b8/Bardock_movie.png','¿Quién es el padre de Goku?','Who is Goku\'s father?',['bardock','bardack'],'dragonball'),
+  makeQ('Nappa','https://static.wikia.nocookie.net/dragonball/images/d/d9/Nappa.png','¿Quién es el compañero calvo de Vegeta?','Who is Vegeta\'s bald companion?',['nappa'],'dragonball'),
+  makeQ('Raditz','https://static.wikia.nocookie.net/dragonball/images/4/45/RaditzSmirk.png','¿Quién es el hermano de Goku?','Who is Goku\'s brother?',['raditz'],'dragonball'),
+],
+series: [
+  makeQ('Walter White','https://upload.wikimedia.org/wikipedia/en/thumb/4/43/Walter_White_S5B.png/220px-Walter_White_S5B.png','¿Quién es este personaje?','Who is this character?',['walter white','heisenberg','walter','mr white'],'series'),
+  makeQ('Breaking Bad','https://upload.wikimedia.org/wikipedia/en/thumb/4/44/Breaking_Bad_title_card.png/300px-Breaking_Bad_title_card.png','¿Cómo se llama esta serie?','What is this show called?',['breaking bad'],'series'),
+  makeQ('Game of Thrones','https://upload.wikimedia.org/wikipedia/en/thumb/d/d8/Game_of_Thrones_title_card.jpg/300px-Game_of_Thrones_title_card.jpg','¿Qué serie es esta?','What show is this?',['game of thrones','juego de tronos','got'],'series'),
+  makeQ('Stranger Things','https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Stranger_Things_logo.png/320px-Stranger_Things_logo.png','¿Qué serie es esta?','What show is this?',['stranger things'],'series'),
+  makeQ('Thanos','https://upload.wikimedia.org/wikipedia/en/thumb/a/a5/Thanos_Infinity_War.jpg/220px-Thanos_Infinity_War.jpg','¿Quién es este villano de Marvel?','Who is this Marvel villain?',['thanos'],'series'),
+  makeQ('The Mandalorian','https://upload.wikimedia.org/wikipedia/en/thumb/a/a7/The_Mandalorian_poster.jpg/220px-The_Mandalorian_poster.jpg','¿Qué serie es esta?','What show is this?',['mandalorian','the mandalorian','mando'],'series'),
+  makeQ('Tony Stark','https://upload.wikimedia.org/wikipedia/en/thumb/4/47/Iron_Man_%28circa_2018%29.png/220px-Iron_Man_%28circa_2018%29.png','¿Quién es Iron Man?','Who is Iron Man?',['tony stark','ironman','iron man'],'series'),
+  makeQ('Squid Game','https://upload.wikimedia.org/wikipedia/en/thumb/c/c6/Squid_Game_Netflix_poster.jpg/220px-Squid_Game_Netflix_poster.jpg','¿Qué serie es esta?','What show is this?',['squid game','el juego del calamar','round 6'],'series'),
+  makeQ('Wednesday Addams','https://upload.wikimedia.org/wikipedia/en/thumb/2/2b/Wednesday_Addams_Netflix_Series.png/220px-Wednesday_Addams_Netflix_Series.png','¿Quién es esta personaje de Netflix?','Who is this Netflix character?',['wednesday','wednesday addams','merlina'],'series'),
+  makeQ('The Witcher','https://upload.wikimedia.org/wikipedia/en/thumb/5/56/The_Witcher_2019.png/220px-The_Witcher_2019.png','¿Qué serie es esta?','What show is this?',['the witcher','witcher','el brujo'],'series'),
+  makeQ('Jon Snow','https://upload.wikimedia.org/wikipedia/en/thumb/f/f8/Jon_Snow-Kit_Harington.jpg/220px-Jon_Snow-Kit_Harington.jpg','¿Quién es este personaje de GoT?','Who is this GoT character?',['jon snow','jon','aegon'],'series'),
+  makeQ('Joker','https://upload.wikimedia.org/wikipedia/en/thumb/6/62/Joker_%282019_film%29_poster.jpg/220px-Joker_%282019_film%29_poster.jpg','¿Quién es este personaje de DC?','Who is this DC character?',['joker','the joker','guason','joaquin phoenix'],'series'),
+  makeQ('The Office','https://upload.wikimedia.org/wikipedia/en/thumb/c/c4/The_Office_US_Logo.jpg/300px-The_Office_US_Logo.jpg','¿Qué comedia es esta?','What comedy is this?',['the office'],'series'),
+  makeQ('Darth Vader','https://upload.wikimedia.org/wikipedia/en/thumb/7/76/Darth_Vader.jpg/220px-Darth_Vader.jpg','¿Quién es este Señor Sith?','Who is this Sith Lord?',['darth vader','vader','anakin skywalker','anakin'],'series'),
+  makeQ('Spider-Man','https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Spider-Man_no_way_home_poster.jpg/220px-Spider-Man_no_way_home_poster.jpg','¿Quién es este superhéroe?','Who is this superhero?',['spiderman','spider-man','spider man','peter parker'],'series'),
+],
+pokemon: [
+  makeQ('Gengar','https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/94.png','¿Qué Pokémon es este?','What Pokémon is this?',['gengar'],'pokemon'),
+  makeQ('Pikachu','https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png','¿Qué Pokémon es este?','What Pokémon is this?',['pikachu','pika'],'pokemon'),
+  makeQ('Charizard','https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png','¿Qué Pokémon es este?','What Pokémon is this?',['charizard','charizard','lizardon'],'pokemon'),
+  makeQ('Mewtwo','https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png','¿Qué Pokémon legendario es este?','What legendary Pokémon is this?',['mewtwo'],'pokemon'),
+  makeQ('Eevee','https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png','¿Qué Pokémon es este?','What Pokémon is this?',['eevee','eievui'],'pokemon'),
+  makeQ('Snorlax','https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/143.png','¿Qué Pokémon dormilón es este?','What sleepy Pokémon is this?',['snorlax','snorlax','kabigon'],'pokemon'),
+  makeQ('Lucario','https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/448.png','¿Qué Pokémon de tipo Acero es este?','What Steel-type Pokémon is this?',['lucario'],'pokemon'),
+  makeQ('Gyarados','https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/130.png','¿Qué Pokémon dragón marino es este?','What sea dragon Pokémon is this?',['gyarados','gyarados'],'pokemon'),
+  makeQ('Bulbasaur','https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png','¿Qué Pokémon es este?','What Pokémon is this?',['bulbasaur','fushigidane'],'pokemon'),
+  makeQ('Jigglypuff','https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/39.png','¿Qué Pokémon cantor es este?','What singing Pokémon is this?',['jigglypuff','rondoudou','clefable'],'pokemon'),
+],
+anime: [
+  makeQ('Naruto','https://static.wikia.nocookie.net/naruto/images/d/da/Naruto_Uzumaki.png','¿Quién es este ninja?','Who is this ninja?',['naruto','naruto uzumaki'],'anime'),
+  makeQ('Sasuke','https://static.wikia.nocookie.net/naruto/images/2/21/Sasuke_Part_2.png','¿Quién es el rival de Naruto?','Who is Naruto\'s rival?',['sasuke','sasuke uchiha'],'anime'),
+  makeQ('Luffy','https://static.wikia.nocookie.net/onepiece/images/6/6d/Monkey_D._Luffy_Anime_Pre_Timeskip_Infobox.png','¿Quién es el futuro Rey de los Piratas?','Who is the future Pirate King?',['luffy','monkey d luffy','monkey d. luffy'],'anime'),
+  makeQ('Ichigo','https://static.wikia.nocookie.net/bleach/images/8/86/Ichigo_Kurosaki_human.png','¿Quién es este Shinigami Sustituto?','Who is this Substitute Shinigami?',['ichigo','ichigo kurosaki'],'anime'),
+  makeQ('Light Yagami','https://static.wikia.nocookie.net/deathnote/images/f/f3/Light_Yagami.png','¿Quién posee la Death Note?','Who owns the Death Note?',['light yagami','light','kira','yagami light'],'anime'),
+  makeQ('Eren Yeager','https://static.wikia.nocookie.net/shingekinokyojin/images/e/e3/Eren_Yeager_%28Anime%29_character_image.png','¿Quién es este Titanio Atacante?','Who is this Attack Titan?',['eren','eren yeager','eren jaeger'],'anime'),
+  makeQ('Levi Ackerman','https://static.wikia.nocookie.net/shingekinokyojin/images/1/10/Levi_Ackermann_%28Anime%29_character_image_%282%29.png','¿Quién es el soldado más fuerte de la humanidad?','Who is humanity\'s strongest soldier?',['levi','levi ackerman','levi ackermann'],'anime'),
+  makeQ('Tanjiro','https://static.wikia.nocookie.net/kimetsu-no-yaiba/images/7/7f/Tanjiro_Kamado_anime.png','¿Quién es este Cazador de Demonios?','Who is this Demon Slayer?',['tanjiro','tanjiro kamado','kamado'],'anime'),
+  makeQ('Gojo','https://static.wikia.nocookie.net/jujutsu-kaisen/images/9/9c/Satoru_Gojo_%28Anime%29.png','¿Quién es el Hechicero más fuerte?','Who is the strongest Sorcerer?',['gojo','satoru gojo','gojo satoru'],'anime'),
+  makeQ('Mikasa','https://static.wikia.nocookie.net/shingekinokyojin/images/8/8e/Mikasa_Ackermann_%28Anime%29_character_image.png','¿Quién protege siempre a Eren?','Who always protects Eren?',['mikasa','mikasa ackerman','mikasa ackermann'],'anime'),
+],
+};
+
+// ══════════════════════════════════════════════════════
+//  GAME STATE
+// ══════════════════════════════════════════════════════
+const COLORS = ['#7C6FF7','#F59E0B','#EC4899','#10B981','#3B82F6','#F97316','#8B5CF6','#06B6D4','#84CC16','#EF4444'];
+const NAMES = ['Elías','Ana','Juan','Luis','Marta','Diego','Sofía','Camilo','Valeria','Rodrigo'];
+
+let G = {
+  phase: 'lobby', // lobby | playing | reveal | ended
+  lang: 'es',
+  targetScore: 100,
+  activeCats: new Set(['destiny2','dragonball','series']),
+  players: [],
+  you: null,
+  roundNum: 0,
+  current: null,
+  usedKeys: new Set(),
+  attempts: [],
+  timerInterval: null,
+  botInterval: null,
+  timeLeft: 20,
+  isHost: false,
+  roomCode: '',
+};
+
+let selectedScore = 100;
+
+function pickScore(el){
+  document.querySelectorAll('.score-opt').forEach(e=>e.classList.remove('on'));
+  el.classList.add('on');
+  selectedScore = parseInt(el.dataset.v);
+}
+
+// ── LOBBY BUILD ──
+function buildCatsGrid(){
+  const grid = document.getElementById('cats-grid');
+  grid.innerHTML = '';
+  CATS.forEach(c=>{
+    const pill = document.createElement('button');
+    pill.className = 'cat-pill' + (G.activeCats.has(c.id)?' on':'');
+    pill.dataset.id = c.id;
+    pill.innerHTML = `<span class="ci">${c.icon}</span><span>${LANG==='en'?c.en:c.es}</span>`;
+    pill.onclick = () => {
+      if(G.activeCats.has(c.id)) G.activeCats.delete(c.id);
+      else G.activeCats.add(c.id);
+      pill.classList.toggle('on', G.activeCats.has(c.id));
+      buildPreview();
+    };
+    grid.appendChild(pill);
+  });
+}
+
+function buildPreview(){
+  const cont = document.getElementById('preview-cats');
+  cont.innerHTML = '';
+  CATS.forEach(c=>{
+    const on = G.activeCats.has(c.id);
+    const total = (QUESTIONS[c.id]||[]).length;
+    const div = document.createElement('div');
+    div.className = 'preview-cat';
+    div.innerHTML = `<div class="preview-cat-icon">${c.icon}</div><div><div class="preview-cat-name">${LANG==='en'?c.en:c.es}</div><div class="preview-cat-count">${total} ${LANG==='es'?'preguntas':'questions'}</div></div><div class="preview-cat-active${on?' on':''}"></div>`;
+    div.onclick = () => {
+      if(G.activeCats.has(c.id)) G.activeCats.delete(c.id);
+      else G.activeCats.add(c.id);
+      buildCatsGrid(); buildPreview();
+    };
+    cont.appendChild(div);
+  });
+}
+
+function showTab(t){
+  document.getElementById('tab-create').style.display = t==='create'?'block':'none';
+  document.getElementById('tab-join').style.display = t==='join'?'block':'none';
+  document.getElementById('tb-create').classList.toggle('on', t==='create');
+  document.getElementById('tb-join').classList.toggle('on', t==='join');
+}
+
+function genCode(){ return Math.random().toString(36).substring(2,8).toUpperCase(); }
+
+function doCreate(){
+  const name = document.getElementById('i-hname').value.trim();
+  if(!name){ toast(LANG==='es'?'Ingresa tu nombre':'Enter your name'); return; }
+  if(G.activeCats.size===0){ toast(LANG==='es'?'Selecciona al menos una categoría':'Select at least one category'); return; }
+  initGame(name, selectedScore, true, genCode());
+}
+
+function doJoin(){
+  const name = document.getElementById('i-jname').value.trim();
+  const code = document.getElementById('i-jcode').value.trim().toUpperCase();
+  if(!name){ toast(LANG==='es'?'Ingresa tu nombre':'Enter your name'); return; }
+  if(code.length<4){ toast(LANG==='es'?'Ingresa el código':'Enter the code'); return; }
+  // If joining, use all cats (simulated)
+  G.activeCats = new Set(Object.keys(QUESTIONS));
+  initGame(name, selectedScore, false, code||genCode());
+}
+
+// ── INIT GAME ──
+function initGame(yourName, target, isHost, code){
+  G.targetScore = target;
+  G.isHost = isHost;
+  G.roomCode = code;
+  G.roundNum = 0;
+  G.usedKeys = new Set();
+  G.phase = 'lobby';
+  G.players = [];
+
+  // Build player list
+  const youIdx = Math.floor(Math.random()*4);
+  for(let i=0;i<8;i++){
+    const name = i===youIdx?yourName:NAMES.filter(n=>n!==yourName)[i];
+    G.players.push({ name, score:0, you:i===youIdx, color:COLORS[i%COLORS.length] });
+  }
+  G.you = G.players.find(p=>p.you);
+
+  // Update UI
+  document.getElementById('tb-code').textContent = code;
+  document.getElementById('tb-target').textContent = target;
+  document.getElementById('tb-pcount').textContent = G.players.length;
+  document.getElementById('rl-pcount').textContent = G.players.length+'/10';
+  document.getElementById('rl-target').textContent = target+' pts';
+  document.getElementById('rl-cats').textContent = G.activeCats.size;
+  document.getElementById('lb-target').textContent = target;
+  document.getElementById('t-firstto').textContent = LANG==='es'?'Primero en llegar a':'First to';
+  document.getElementById('t-wins').textContent = LANG==='es'?'gana':'wins';
+
+  renderPlayers();
+  renderLB();
+  applyLang();
+  showScreen('s-game');
+
+  if(isHost){
+    showPhaseMsg('');
+    document.getElementById('start-btn').style.display='inline-flex';
+    setInputEnabled(false);
+  } else {
+    showPhaseMsg(t('phase-waiting'));
+    document.getElementById('start-btn').style.display='none';
+    setInputEnabled(false);
+    // Simulate host starting after 2s
+    setTimeout(()=>nextQuestion(), 2000);
+  }
+}
+
+function hostStart(){
+  document.getElementById('start-btn').style.display='none';
+  hidePhaseMsg();
+  nextQuestion();
+}
+
+// ── QUESTION FLOW ──
+function getNextQ(){
+  const cats = [...G.activeCats].filter(c=>QUESTIONS[c]&&QUESTIONS[c].length);
+  if(!cats.length) return null;
+  let tries=0;
+  while(tries<50){
+    const cat = cats[Math.floor(Math.random()*cats.length)];
+    const pool = QUESTIONS[cat];
+    const q = pool[Math.floor(Math.random()*pool.length)];
+    const key = cat+'::'+q.answer;
+    if(!G.usedKeys.has(key)){
+      G.usedKeys.add(key);
+      const catInfo = CATS.find(c=>c.id===cat);
+      return {...q, catInfo};
+    }
+    tries++;
+  }
+  // Reset if all used
+  G.usedKeys = new Set();
+  return getNextQ();
+}
+
+function nextQuestion(){
+  const q = getNextQ();
+  if(!q) return;
+  G.current = q;
+  G.roundNum++;
+  G.phase = 'playing';
+  G.attempts = [];
+
+  document.getElementById('round-num').textContent = G.roundNum;
+  document.getElementById('cat-name').textContent = LANG==='en'?q.catInfo.en:q.catInfo.es;
+  document.getElementById('cat-icon').textContent = q.catInfo.icon;
+  document.getElementById('q-pill').textContent = LANG==='en'?(q.qen||q.q):q.q;
+
+  // Image - multi source (real images when possible)
+  const img = document.getElementById('game-img');
+  const ph = document.getElementById('img-ph');
+  loadGameImage(img, ph, q);
+
+  // Clear overlays
+  document.getElementById('reveal-ov').classList.remove('show');
+  document.getElementById('correct-ring').classList.remove('show');
+  clearAttempts();
+  hidePhaseMsg();
+  setInputEnabled(true);
+  document.getElementById('guess-inp').focus();
+  startTimer(20);
+  startBots();
+}
+
+function imgError(img){
+  img.style.display='none';
+  document.getElementById('img-ph').style.display='flex';
+}
+
+// ── TIMER ──
+function startTimer(s){
+  clearInterval(G.timerInterval);
+  G.timeLeft = s;
+  updateTimer(s);
+  G.timerInterval = setInterval(()=>{
+    G.timeLeft--;
+    updateTimer(G.timeLeft);
+    if(G.timeLeft<=0){ clearInterval(G.timerInterval); timeUp(); }
+  },1000);
+}
+
+function updateTimer(t){
+  document.getElementById('tsec').textContent = t;
+  const circ = document.getElementById('tcircle');
+  const total = 207.35;
+  circ.style.strokeDashoffset = total - (total*t/20);
+  circ.style.stroke = t<=5?'var(--red)':t<=10?'var(--amber)':'var(--p)';
+}
+
+function timeUp(){
+  if(G.phase!=='playing') return;
+  G.phase='reveal';
+  clearInterval(G.botInterval);
+  setInputEnabled(false);
+  showReveal(G.current.answer, null);
+  showPhaseMsg(t('phase-reveal'));
+  setTimeout(()=>nextQuestion(), 2500);
+}
+
+// ── GUESS ──
+function onGuessKey(e){ if(e.key==='Enter'){ e.preventDefault(); submitGuess(); } }
+
+function submitGuess(){
+  const inp = document.getElementById('guess-inp');
+  const guess = inp.value.trim();
+  if(!guess || G.phase!=='playing') return;
+  inp.value='';
+  const correct = checkAnswer(guess, G.current);
+  if(correct){
+    handleCorrect(G.you.name, G.timeLeft, true);
+  } else {
+    addAttempt(G.you.name, guess);
+  }
+}
+
+function checkAnswer(guess, q){
+  const g = norm(guess);
+  if(g===norm(q.answer)) return true;
+  for(const v of q.variants){ if(g===norm(v)) return true; }
+  return false;
+}
+
+function norm(s){
+  return s.toLowerCase().trim()
+    .replace(/[-_\s\.]/g,'')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+
+function handleCorrect(playerName, timeLeft, isYou){
+  if(G.phase!=='playing') return;
+  clearInterval(G.timerInterval);
+  clearInterval(G.botInterval);
+  G.phase = 'reveal';
+
+  const pts = timeLeft>=17?10:timeLeft>=13?9:timeLeft>=9?8:timeLeft>=5?7:6;
+  const player = G.players.find(p=>p.name===playerName);
+  if(player){ player.score+=pts; }
+
+  renderLB();
+  if(isYou){ showPtsPop(pts); toast(t('toast-correct')+pts, true); }
+  addActivity(playerName, pts);
+  showCorrectRing();
+  showReveal(G.current.answer, playerName);
+  setInputEnabled(false);
+  hidePhaseMsg();
+
+  if(player && player.score>=G.targetScore){
+    setTimeout(()=>endGame(playerName), 2200);
+    return;
+  }
+  setTimeout(()=>nextQuestion(), 2200);
+}
+
+// ── BOTS ──
+function startBots(){
+  clearInterval(G.botInterval);
+  const delay = 2000 + Math.random()*2000;
+  G.botInterval = setInterval(()=>{
+    if(G.phase!=='playing'||!G.current) return;
+    const bots = G.players.filter(p=>!p.you);
+    if(!bots.length) return;
+    const bot = bots[Math.floor(Math.random()*bots.length)];
+    const wrongPool = WRONG_POOL[G.current.cat]||['No sé','Hmm','...'];
+    const roll = Math.random();
+    if(roll < 0.12 && G.timeLeft > 4){
+      handleCorrect(bot.name, G.timeLeft, false);
+    } else if(roll < 0.5){
+      const wrong = wrongPool[Math.floor(Math.random()*wrongPool.length)];
+      if(wrong !== G.current.answer) addAttempt(bot.name, wrong);
+    }
+  }, 1800+Math.random()*1200);
+}
+
+// ── UI HELPERS ──
+function renderPlayers(){
+  const list = document.getElementById('players-list');
+  list.innerHTML = '';
+  G.players.forEach(p=>{
+    const row = document.createElement('div');
+    row.className = 'player-row';
+    row.innerHTML = `<div class="av" style="background:${p.color}22;color:${p.color}">${p.name[0]}</div><div class="pname">${p.name}${p.you?` <span class="pbadge">(${LANG==='es'?'Tú':'You'}) ⭐</span>`:''}</div><div class="pdot" style="opacity:${Math.random()>.12?1:.3}"></div>`;
+    list.appendChild(row);
+  });
+}
+
+function renderLB(){
+  const sorted = [...G.players].sort((a,b)=>b.score-a.score);
+  const lb = document.getElementById('leaderboard');
+  lb.innerHTML = '';
+  sorted.forEach((p,i)=>{
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    const pct = Math.min(100, Math.round(p.score/G.targetScore*100));
+    const row = document.createElement('div');
+    row.className = 'lb-row'+(p.you?' you':'');
+    row.innerHTML = `
+      <div class="${medal?'lb-medal':'lb-rank-num'}">${medal||i+1}</div>
+      <div class="lb-info">
+        <div style="display:flex;align-items:center;gap:4px">
+          <div class="lb-name">${p.name}</div>${p.you?`<span class="lb-you-tag">(${LANG==='es'?'tú':'you'})</span>`:''}
+        </div>
+        <div class="lb-prog"><div class="lb-prog-fill" style="width:${pct}%;background:${p.color||'var(--p)'}"></div></div>
+      </div>
+      <div class="lb-score">${p.score}</div>`;
+    lb.appendChild(row);
+  });
+}
+
+function addAttempt(name, guess){
+  const list = document.getElementById('alist');
+  const empty = list.querySelector('.no-att');
+  if(empty) empty.remove();
+  const item = document.createElement('div');
+  item.className = 'attempt';
+  item.innerHTML = `<span class="aname">${name}:</span><span class="aguess">${guess}</span>`;
+  list.insertBefore(item, list.firstChild);
+  if(list.children.length > 14) list.removeChild(list.lastChild);
+}
+
+function clearAttempts(){
+  const list = document.getElementById('alist');
+  list.innerHTML = `<div class="no-att" id="no-att-msg">${t('no-att-msg').replace(/\n/g,'<br>')}</div>`;
+}
+
+function addActivity(name, pts){
+  const feed = document.getElementById('act-feed');
+  const player = G.players.find(p=>p.name===name);
+  const item = document.createElement('div');
+  item.className = 'act-item';
+  item.innerHTML = `<div class="act-av" style="background:${player?.color||'var(--p)'}22;color:${player?.color||'var(--p)'}">${name[0]}</div><div class="act-text">${name} ${LANG==='es'?'acertó':'got it'}</div><div class="act-pts">+${pts}</div>`;
+  feed.insertBefore(item, feed.firstChild);
+  if(feed.children.length>5) feed.removeChild(feed.lastChild);
+}
+
+function showReveal(answer, winner){
+  document.getElementById('reveal-ans').textContent = answer;
+  document.getElementById('reveal-who').textContent = winner
+    ? `🎉 ${winner} ${LANG==='es'?'acertó':'got it'}!`
+    : (LANG==='es'?'⏰ Tiempo agotado':'⏰ Time\'s up');
+  document.getElementById('t-answer-was').textContent = t('t-answer-was');
+  document.getElementById('reveal-ov').classList.add('show');
+}
+
+function showCorrectRing(){
+  const r = document.getElementById('correct-ring');
+  r.classList.add('show');
+  setTimeout(()=>r.classList.remove('show'), 700);
+}
+
+function setInputEnabled(on){
+  document.getElementById('guess-inp').disabled = !on;
+  document.getElementById('send-btn').disabled = !on;
+}
+
+function showPhaseMsg(msg){
+  const el = document.getElementById('phase-msg');
+  el.textContent = msg;
+  el.style.display = msg?'block':'none';
+}
+
+function hidePhaseMsg(){ document.getElementById('phase-msg').style.display='none'; }
+
+// ── END GAME ──
+function endGame(winner){
+  clearInterval(G.timerInterval);
+  clearInterval(G.botInterval);
+  G.phase = 'ended';
+  const sorted = [...G.players].sort((a,b)=>b.score-a.score);
+  document.getElementById('end-winner').textContent = LANG==='es'?`${winner} ganó!`:`${winner} won!`;
+  document.getElementById('end-sub').textContent = t('t-end-sub');
+  document.getElementById('t-playagain').textContent = t('t-playagain');
+  document.getElementById('t-home').textContent = t('t-home');
+  const fs = document.getElementById('fs-list');
+  fs.innerHTML = '';
+  sorted.forEach((p,i)=>{
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}.`;
+    const row=document.createElement('div');
+    row.className='fs-row';
+    row.innerHTML=`<div class="fs-medal">${medal}</div><div class="fs-name" style="${p.you?'font-weight:700;color:var(--p)':''}">${p.name}${p.you?' ⭐':''}</div><div class="fs-score">${p.score}</div>`;
+    fs.appendChild(row);
+  });
+  showScreen('s-end');
+}
+
+// ── NAV ──
+function goHome(){
+  clearInterval(G.timerInterval);
+  clearInterval(G.botInterval);
+  G.phase='lobby';
+  showScreen('s-lobby');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function copyCode(){
+  const code = G.roomCode||document.getElementById('tb-code').textContent;
+  navigator.clipboard.writeText(code).catch(()=>{});
+  toast(t('toast-copied'), true);
+}
+
+// ── TOAST ──
+let toastTimer;
+function toast(msg, ok=false){
+  const el = document.getElementById('toast');
+  clearTimeout(toastTimer);
+  el.textContent = msg;
+  el.className = 'toast show'+(ok?' ok':'');
+  toastTimer = setTimeout(()=>el.className='toast', 2400);
+}
+
+// ── POINTS POP ──
+function showPtsPop(pts){
+  const el = document.createElement('div');
+  el.className = 'pts-pop';
+  el.textContent = '+'+pts;
+  el.style.left = (Math.random()*35+32)+'%';
+  el.style.top = '38%';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 1200);
+}
+
+// ── INIT ──
+buildCatsGrid();
+buildPreview();
+applyLang();
+</script>
+</body>
+</html>
